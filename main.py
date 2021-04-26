@@ -4,9 +4,10 @@ import sys
 import utils
 import logging
 
-from dotenv import load_dotenv, set_key
+from dotenv import set_key
 from pathlib import Path
 from discord.ext import commands
+from config import DISCORD_TOKEN, AVATAR_HASH
 
 # LOGGING
 logger = logging.getLogger('RocketRandy.main')
@@ -14,11 +15,6 @@ logger.setLevel(logging.INFO)
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
-
-# ENV
-load_dotenv()
-DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
-AVATAR_HASH = os.getenv('AVATAR_HASH')
 
 # RESOURCES
 avatar_path = Path('resources/avatar.png')
