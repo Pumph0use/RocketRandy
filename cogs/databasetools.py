@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
-from database.models import Base
 from database.models.user import User
-from database import engine, Session
+from database import Session
 
 
 class DatabaseTools(commands.Cog):
@@ -22,15 +21,14 @@ class DatabaseTools(commands.Cog):
         user = session.query(User).filter(User.discord_member_id == member.id).first()
 
         if user is None:
-            user = User(member.id)
+            user = User(member)
             session.add(user)
             session.commit()
-            await ctx.send(f'{member.mention} user with ID {member.id} stored in postgres.')
+            await ctx.send(f'{member.mention} user with ID:{member.id} and Display name:{member.display_name} stored in postgres.')
 
         else:
-            await ctx.send(f'{member.mention} user with ID {member.id} already in postgres.')
+            await ctx.send(f'{member.mention} user with ID:{member.id} and Display name:{member.display_name} already in postgres.')
 
 
 def setup(bot):
-    Base.metadata.create_all(engine)
     bot.add_cog(DatabaseTools(bot))
