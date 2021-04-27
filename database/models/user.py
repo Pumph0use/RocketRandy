@@ -13,7 +13,7 @@ class User(Base):
     date_first_seen = Column(DateTime, default=datetime.utcnow())
     display_name = Column(String)
 
-    rl_threes_ranks = relationship('RLThreesRank', back_populates='user')
+    rl_threes_ranks = relationship("RLThreesRank", back_populates="user")
 
     def __init__(self, member: discord.Member):
         self.member_id = member.id

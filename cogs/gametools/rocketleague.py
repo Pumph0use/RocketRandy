@@ -138,7 +138,7 @@ class RocketLeague(commands.Cog):
                 best_playlist_name = None
                 for segment in response["data"]["segments"]:
                     if segment["type"] == "playlist":
-                        cur_playlist_id = segment['attributes']['playlistId']
+                        cur_playlist_id = segment["attributes"]["playlistId"]
                         # 11 2's
                         # 10 1's
                         if cur_playlist_id in [10, 11, 13]:
@@ -184,21 +184,29 @@ class RocketLeague(commands.Cog):
                 self.logger.info(f"Found playlist data for {username}...")
                 for segment in response["data"]["segments"]:
                     if segment["type"] == "playlist":
-                        cur_playlist_id = segment['attributes']['playlistId']
+                        cur_playlist_id = segment["attributes"]["playlistId"]
                         if cur_playlist_id == 13:
                             # 13 3's
-                            playlist_mmr = segment['stats']['rating']['value']
-                            season = segment['attributes']['season']
+                            playlist_mmr = segment["stats"]["rating"]["value"]
+                            season = segment["attributes"]["season"]
 
                             session = Session()
 
-                            user = session.query(User).filter(User.member_id == member.id).first()
+                            user = (
+                                session.query(User)
+                                .filter(User.member_id == member.id)
+                                .first()
+                            )
                             rl_threes_rank = RLThreesRank(season, playlist_mmr)
-                            rl_threes_rank.user = user if user is not None else User(member)
+                            rl_threes_rank.user = (
+                                user if user is not None else User(member)
+                            )
 
                             session.commit()
 
-                            await ctx.send(f'{member.mention} I have stored your current 3v3 mmr of {playlist_mmr}')
+                            await ctx.send(
+                                f"{member.mention} I have stored your current 3v3 mmr of {playlist_mmr}"
+                            )
 
     # endregion
 
