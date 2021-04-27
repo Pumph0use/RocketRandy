@@ -9,7 +9,8 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from database import Session
 from database.models.rocketleague import RLThreesRank
-from database.models import User
+from database.models import User, ConnectedAccount
+from database.models.user import Platforms
 
 load_dotenv()
 RL_TRACKER_URL = os.getenv("RL_TRACKER_URL")
@@ -171,11 +172,6 @@ class RocketLeague(commands.Cog):
         self, ctx, platform: str, username: str, member: discord.Member = None
     ):
         member = member or ctx.author
-
-        response = await self.get_user_info(ctx, platform, username)
-
-        member = member or ctx.author
-
         response = await self.get_user_info(ctx, platform, username)
 
         if response["data"]:
@@ -198,14 +194,37 @@ class RocketLeague(commands.Cog):
                                 .first()
                             )
                             rl_threes_rank = RLThreesRank(season, playlist_mmr)
-                            rl_threes_rank.user = (
-                                user if user is not None else User(member)
+
+                            cur_platform = (
+                                Platforms.epic
+                                if platform != "steam"
+                                else Platforms.steam
                             )
+
+                            if user:
+                                already_connected = False
+                                for account in user.connected_accounts:
+                                    already_connected = account.platform == cur_platform
+
+                                if not already_connected:
+                                    user.connected_accounts.append(
+                                        ConnectedAccount(cur_platform, username)
+                                    )
+                            else:
+                                user = User(member)
+                                user.connected_accounts.append(
+                                    ConnectedAccount(cur_platform, username)
+                                )
+
+                            rl_threes_rank.user = user
 
                             session.commit()
 
                             await ctx.send(
                                 f"{member.mention} I have stored your current 3v3 mmr of {playlist_mmr}"
+                            )
+                            await ctx.send(
+                                f"You have {len(user.connected_accounts)} connected accounts."
                             )
 
     # endregion
