@@ -5,16 +5,16 @@ from database.models.responses import GreetingResponse
 from database import Session
 
 
-class DatabaseRemove(commands.Cog):
+class DatabaseGet(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.group(invoke_without_command=True)
     @commands.is_owner()
-    async def dbremove(self, ctx):
+    async def dbget(self, ctx):
         await ctx.send(f"This is a suite of test functions for the postgres database.")
 
-    @dbremove.command()
+    @dbget.command()
     async def user(self, ctx, member: discord.Member = None):
         member = member or ctx.author
 
@@ -23,20 +23,15 @@ class DatabaseRemove(commands.Cog):
         user = session.query(User).filter(User.member_id == member.id).first()
 
         if user is not None:
-            session.delete(user)
-            session.commit()
             await ctx.send(
-                f"{member.mention} user with ID:{member.id} and "
-                f"Display name:{member.display_name} removed from User database."
+                f"{member.mention} user with ID:{user.member_id} and "
+                f"Display name:{user.display_name} was first seen on {user.date_first_seen}."
             )
 
         else:
-            await ctx.send(
-                f"{member.mention} user with ID:{member.id} and "
-                f"Display name:{member.display_name} is not stored in the User database."
-            )
+            await ctx.send(f"{member.mention} no user found in the database.")
 
-    @dbremove.command()
+    @dbget.command()
     async def greeting(self, ctx, *, response):
         session = Session()
 
@@ -47,10 +42,10 @@ class DatabaseRemove(commands.Cog):
         )
 
         if greeting is not None:
-            session.delete(greeting)
-            session.commit()
             await ctx.send(
-                f'{ctx.author.mention} I have removed "{response}" from the Greetings database.'
+                f"{ctx.author.mention} I have found a Greeting with ID:{greeting.id}, "
+                f'Response:"{greeting.response}", '
+                f"and it was added by {greeting.user.display_name} from the database."
             )
         else:
             await ctx.send(
@@ -59,4 +54,4 @@ class DatabaseRemove(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(DatabaseRemove(bot))
+    bot.add_cog(DatabaseGet(bot))

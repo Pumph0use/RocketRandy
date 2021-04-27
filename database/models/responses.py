@@ -7,9 +7,11 @@ class GreetingResponse(Base):
     __tablename__ = "greetings"
 
     id = Column(Integer, primary_key=True)
-    response = Column(String)
+    response = Column(String, unique=True)
     added_by = Column(BigInteger, ForeignKey("users.member_id"))
+
+    user = relationship("User")
 
     def __init__(self, response, member_id):
         self.response = response
-        self.member_id = member_id
+        self.added_by = member_id
