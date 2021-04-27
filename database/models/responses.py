@@ -8,7 +8,8 @@ class GreetingResponse(Base):
 
     id = Column(Integer, primary_key=True)
     response = Column(String)
+    added_by = Column(BigInteger, ForeignKey("users.member_id"))
 
-    def __init__(self, response):
+    def __init__(self, response, member_id):
         self.response = response
-
+        self.member_id = member_id
