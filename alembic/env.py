@@ -6,9 +6,8 @@ from sqlalchemy import pool
 from alembic import context
 
 # MODELS TODO: Figure out a better way to abstract this so we don't have to add each one manually
-from database.models import Base
-from database.models.user import User
-from database.models.responses import GreetingResponse
+from database import Base
+import database.models
 
 from config import DB_CONNECT_STRING
 

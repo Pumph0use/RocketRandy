@@ -1,6 +1,6 @@
 import discord
 
-from database.models import Base
+from database import Base
 from sqlalchemy import Column, String, Date, BigInteger
 from datetime import date
 

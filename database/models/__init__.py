@@ -1,3 +1,2 @@
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from database.models.responses import GreetingResponse
+from database.models.user import User
