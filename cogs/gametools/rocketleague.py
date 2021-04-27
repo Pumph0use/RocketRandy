@@ -7,6 +7,9 @@ import discord
 import aiohttp
 from discord.ext import commands
 from dotenv import load_dotenv
+from database import Session
+from database.models.rocketleague import RLThreesRank
+from database.models import User
 
 load_dotenv()
 RL_TRACKER_URL = os.getenv("RL_TRACKER_URL")
@@ -135,7 +138,10 @@ class RocketLeague(commands.Cog):
                 best_playlist_name = None
                 for segment in response["data"]["segments"]:
                     if segment["type"] == "playlist":
-                        if segment["attributes"]["playlistId"] in [10, 11, 13]:
+                        cur_playlist_id = segment['attributes']['playlistId']
+                        # 11 2's
+                        # 10 1's
+                        if cur_playlist_id in [10, 11, 13]:
                             playlist_mmr = segment["stats"]["rating"]["value"]
                             if playlist_mmr > max_mmr:
                                 max_mmr = playlist_mmr
@@ -167,6 +173,32 @@ class RocketLeague(commands.Cog):
         member = member or ctx.author
 
         response = await self.get_user_info(ctx, platform, username)
+
+        member = member or ctx.author
+
+        response = await self.get_user_info(ctx, platform, username)
+
+        if response["data"]:
+            self.logger.info(f"Found data for {username}...")
+            if response["data"]["segments"]:
+                self.logger.info(f"Found playlist data for {username}...")
+                for segment in response["data"]["segments"]:
+                    if segment["type"] == "playlist":
+                        cur_playlist_id = segment['attributes']['playlistId']
+                        if cur_playlist_id == 13:
+                            # 13 3's
+                            playlist_mmr = segment['stats']['rating']['value']
+                            season = segment['attributes']['season']
+
+                            session = Session()
+
+                            user = session.query(User).filter(User.member_id == member.id).first()
+                            rl_threes_rank = RLThreesRank(season, playlist_mmr)
+                            rl_threes_rank.user = user if user is not None else User(member)
+
+                            session.commit()
+
+                            await ctx.send(f'{member.mention} I have stored your current 3v3 mmr of {playlist_mmr}')
 
     # endregion
 

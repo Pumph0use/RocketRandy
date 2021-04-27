@@ -12,6 +12,5 @@ class GreetingResponse(Base):
 
     user = relationship("User")
 
-    def __init__(self, response, member_id):
+    def __init__(self, response):
         self.response = response
-        self.added_by = member_id

@@ -53,11 +53,11 @@ class DatabaseAdd(commands.Cog):
         user = session.query(User).filter(User.member_id == ctx.author.id).first()
 
         if user is None:
-            add_user_to_session(session, ctx.author)
-            session.commit()
+            user = User(ctx.author)
 
         if greeting is None:
-            greeting = GreetingResponse(response, ctx.author.id)
+            greeting = GreetingResponse(response)
+            greeting.user = user
             session.add(greeting)
             session.commit()
             await ctx.send(
