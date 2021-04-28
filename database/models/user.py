@@ -1,16 +1,10 @@
-import enum
-
 import discord
 
 from database import Base
 from sqlalchemy import Column, String, DateTime, BigInteger, Integer, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
-
-
-class Platforms(enum.Enum):
-    steam = 1
-    epic = 2
+from utils import Platforms
 
 
 class User(Base):
@@ -21,6 +15,8 @@ class User(Base):
     display_name = Column(String(32))
 
     rl_threes_ranks = relationship("RLThreesRank", back_populates="user")
+    rl_twos_ranks = relationship("RLTwosRank", back_populates="user")
+    rl_ones_ranks = relationship("RLOnesRank", back_populates="user")
     connected_accounts = relationship("ConnectedAccount", back_populates="user")
 
     def __init__(self, member: discord.Member):

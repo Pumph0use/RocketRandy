@@ -1,1 +1,1 @@
-from database.models.rocketleague.rankings import RLThreesRank
+from database.models.rocketleague.rankings import RLThreesRank, RLOnesRank, RLTwosRank

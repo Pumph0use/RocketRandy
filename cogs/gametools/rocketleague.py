@@ -8,7 +8,7 @@ import aiohttp
 from discord.ext import commands
 from dotenv import load_dotenv
 from database import Session
-from database.models.rocketleague import RLThreesRank
+from database.models.rocketleague import RLThreesRank, RLTwosRank, RLOnesRank
 from database.models import User, ConnectedAccount
 from database.models.user import Platforms
 
@@ -174,58 +174,87 @@ class RocketLeague(commands.Cog):
         member = member or ctx.author
         response = await self.get_user_info(ctx, platform, username)
 
+        threes, twos, ones = await self.extract_rocket_league_data(
+            member, platform, response, username
+        )
+        await ctx.send(f"{member.mention} Your 3v3 mmr is {threes}")
+
+    @mmr.command()
+    async def twos(
+        self, ctx, platform: str, username: str, member: discord.Member = None
+    ):
+        member = member or ctx.author
+        response = await self.get_user_info(ctx, platform, username)
+        threes, twos, ones = await self.extract_rocket_league_data(
+            member, platform, response, username
+        )
+        await ctx.send(f"{member.mention} Your 2v2 mmr is {twos}")
+
+    @mmr.command()
+    async def ones(
+        self, ctx, platform: str, username: str, member: discord.Member = None
+    ):
+        member = member or ctx.author
+        response = await self.get_user_info(ctx, platform, username)
+        threes, twos, ones = await self.extract_rocket_league_data(
+            member, platform, response, username
+        )
+        await ctx.send(f"{member.mention} Your 1v1 mmr is {ones}")
+
+    async def extract_rocket_league_data(self, member, platform, response, username):
         if response["data"]:
             self.logger.info(f"Found data for {username}...")
+            cur_platform = Platforms.epic if platform != "steam" else Platforms.steam
+            session = Session()
+            user = session.query(User).filter(User.member_id == member.id).first()
+            new_user = False
+            if user:
+                already_connected = False
+                for account in user.connected_accounts:
+                    already_connected = account.platform == cur_platform
+
+                if not already_connected:
+                    user.connected_accounts.append(
+                        ConnectedAccount(cur_platform, username)
+                    )
+            else:
+                new_user = True
+                user = User(member)
+                user.connected_accounts.append(ConnectedAccount(cur_platform, username))
+
+            rl_threes_rank = None
+            rl_twos_rank = None
+            rl_ones_rank = None
+
             if response["data"]["segments"]:
                 self.logger.info(f"Found playlist data for {username}...")
                 for segment in response["data"]["segments"]:
                     if segment["type"] == "playlist":
                         cur_playlist_id = segment["attributes"]["playlistId"]
+                        playlist_mmr = segment["stats"]["rating"]["value"]
+                        season = segment["attributes"]["season"]
                         if cur_playlist_id == 13:
                             # 13 3's
-                            playlist_mmr = segment["stats"]["rating"]["value"]
-                            season = segment["attributes"]["season"]
-
-                            session = Session()
-
-                            user = (
-                                session.query(User)
-                                .filter(User.member_id == member.id)
-                                .first()
-                            )
                             rl_threes_rank = RLThreesRank(season, playlist_mmr)
-
-                            cur_platform = (
-                                Platforms.epic
-                                if platform != "steam"
-                                else Platforms.steam
-                            )
-
-                            if user:
-                                already_connected = False
-                                for account in user.connected_accounts:
-                                    already_connected = account.platform == cur_platform
-
-                                if not already_connected:
-                                    user.connected_accounts.append(
-                                        ConnectedAccount(cur_platform, username)
-                                    )
-                            else:
-                                user = User(member)
-                                user.connected_accounts.append(
-                                    ConnectedAccount(cur_platform, username)
-                                )
-
                             rl_threes_rank.user = user
+                        elif cur_playlist_id == 11:
+                            # 11 2's
+                            rl_twos_rank = RLTwosRank(season, playlist_mmr)
+                            rl_twos_rank.user = user
+                        elif cur_playlist_id == 10:
+                            # 10 1's
+                            rl_ones_rank = RLOnesRank(season, playlist_mmr)
+                            rl_ones_rank.user = user
 
-                            session.commit()
+            if new_user:
+                session.add(user)
 
-                            await ctx.send(
-                                f"{member.mention} I have stored your current 3v3 mmr of {playlist_mmr}"
-                            )
-                            await ctx.send(
-                                f"You have {len(user.connected_accounts)} connected accounts."
-                            )
+            threes_mmr = rl_threes_rank.mmr
+            twos_mmr = rl_twos_rank.mmr
+            ones_mmr = rl_ones_rank.mmr
+            session.commit()
+
+            return threes_mmr, twos_mmr, ones_mmr
 
     # endregion
 
