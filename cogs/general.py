@@ -81,6 +81,13 @@ class General(commands.Cog):
             await ctx.send(f"Hello {member.mention}. I see you like attention.")
         self._last_member = member
 
+    @commands.command()
+    async def cum(self, ctx, number: int = 20):
+        # literally only because my discord server is weird and kept asking for it.
+        # my bad.
+        emoji = '\U0001F4A6'
+        await ctx.send(f'{emoji * number}')
+
 
 def setup(bot):
     bot.add_cog(General(bot))

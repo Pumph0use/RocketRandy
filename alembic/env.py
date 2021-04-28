@@ -8,6 +8,7 @@ from alembic import context
 # MODELS TODO: Figure out a better way to abstract this so we don't have to add each one manually
 from database import Base
 import database.models
+from utils.platforms import Platforms
 
 from config import DB_CONNECT_STRING
 

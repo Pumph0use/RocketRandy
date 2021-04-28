@@ -175,7 +175,7 @@ class RocketLeague(commands.Cog):
         response = await self.get_user_info(ctx, platform, username)
 
         threes, twos, ones = await self.extract_rocket_league_data(
-            member, platform, response, username
+            ctx, member, platform, response, username
         )
         await ctx.send(f"{member.mention} Your 3v3 mmr is {threes}")
 
@@ -186,7 +186,7 @@ class RocketLeague(commands.Cog):
         member = member or ctx.author
         response = await self.get_user_info(ctx, platform, username)
         threes, twos, ones = await self.extract_rocket_league_data(
-            member, platform, response, username
+            ctx, member, platform, response, username
         )
         await ctx.send(f"{member.mention} Your 2v2 mmr is {twos}")
 
@@ -197,14 +197,28 @@ class RocketLeague(commands.Cog):
         member = member or ctx.author
         response = await self.get_user_info(ctx, platform, username)
         threes, twos, ones = await self.extract_rocket_league_data(
-            member, platform, response, username
+            ctx, member, platform, response, username
         )
         await ctx.send(f"{member.mention} Your 1v1 mmr is {ones}")
 
-    async def extract_rocket_league_data(self, member, platform, response, username):
+    async def extract_rocket_league_data(self, ctx, member, platform, response, username):
         if response["data"]:
             self.logger.info(f"Found data for {username}...")
-            cur_platform = Platforms.epic if platform != "steam" else Platforms.steam
+            cur_platform = None
+
+            platform = 'psn' if platform.lower() in ['ps4', 'ps5', 'playstation', 'ps3', 'ps2', 'ps1'] else platform
+
+            if platform == 'psn':
+                cur_platform = Platforms.psn
+            elif platform == 'steam':
+                cur_platform = Platforms.steam
+            elif platform == 'epic':
+                cur_platform = Platforms.epic
+
+            if cur_platform is None:
+                await ctx.send(f'{ctx.author.mention} You must provide a valid platform!')
+                return None, None, None
+
             session = Session()
             user = session.query(User).filter(User.member_id == member.id).first()
             new_user = False
