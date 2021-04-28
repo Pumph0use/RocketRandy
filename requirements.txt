@@ -4,3 +4,4 @@ aiohttp
 SQLAlchemy
 psycopg2
 alembic
+emoji

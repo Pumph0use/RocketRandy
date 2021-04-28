@@ -2,6 +2,7 @@ import logging
 import random
 
 import discord
+import emoji
 from discord.ext import commands
 from database import Session
 from database.models.responses import GreetingResponse
@@ -85,8 +86,7 @@ class General(commands.Cog):
     async def cum(self, ctx, number: int = 20):
         # literally only because my discord server is weird and kept asking for it.
         # my bad.
-        emoji = '\U0001F4A6'
-        await ctx.send(f'{emoji * number}')
+        await ctx.send(emoji.emojize(f'{":sweat_drops:" * number}'))
 
 
 def setup(bot):
