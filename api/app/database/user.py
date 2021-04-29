@@ -1,4 +1,5 @@
-from  .base import db
+from .base import db
+
 
 class User(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)

@@ -53,6 +53,7 @@ async def reload(ctx, extension_name: str):
         f"{ctx.author.mention} I have reloaded the {extension_name} extension."
     )
 
+
 ##########
 
 if __name__ == "__main__":
