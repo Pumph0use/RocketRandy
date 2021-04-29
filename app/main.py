@@ -24,9 +24,7 @@ disc_bot_client = commands.Bot(command_prefix="!")
 for root, dirs, files in os.walk("cogs"):
     for file_name in [file for file in files if file.endswith(".py")]:
         cog_name = Path(file_name).stem
-        logger.info(f'root is currently: {root}')
         root = root.replace("\\", ".").replace("/", ".")
-        logger.info(f'root is now: {root}')
         logger.info(f"Loading {root}.{cog_name} extension...")
         disc_bot_client.load_extension(f"{root}.{cog_name}")
 
@@ -54,7 +52,6 @@ async def reload(ctx, extension_name: str):
     await ctx.send(
         f"{ctx.author.mention} I have reloaded the {extension_name} extension."
     )
-
 
 ##########
 

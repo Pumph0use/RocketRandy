@@ -3,4 +3,32 @@ services:
   rr-discord-app:
     build: ./app/
     volumes:
-    - ./app/:/usr/src/app/
+      - ./app/:/usr/src/app/
+    networks:
+      frontend:
+  rr-postgres:
+    image: postgres:13-alpine
+    ports:
+    - "5432:5432"
+    volumes:
+      - rr_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=rr_admin
+      - POSTGRES_PASSWORD=rr_pass
+      - POSTGRES_DB=rr_data
+    networks:
+      backend:
+  rr-api:
+    build: ./api/
+    volumes:
+      - ./api/:/usr/src/api/
+    ports:
+    - "5000:5000"
+    networks:
+      frontend:
+      backend:
+volumes:
+  rr_data:
+networks:
+  frontend:
+  backend:
