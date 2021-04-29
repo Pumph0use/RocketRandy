@@ -2,14 +2,16 @@ from flask import Flask
 from flask_migrate import Migrate
 from app.blueprints import *
 from app.database.base import db
+from app.config import DB_CONNECTION_STRING
 import app.database
 
 
 def create_app():
     app = Flask(__name__)
+
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = "postgresql+psycopg2://rr_admin:rr_pass@localhost:5432/rr_data"
+    ] = DB_CONNECTION_STRING
     db.init_app(app)
     migrate = Migrate(app, db)
 
