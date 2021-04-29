@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
-import app.blueprints
+from app.blueprints import *
 from app.database.base import db
 import app.database
 
@@ -13,8 +13,11 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
 
-    app.register_blueprint(blueprints.index)
-    app.register_blueprint(blueprints.user_management, url_prefix="/users")
+    print(index)
+    print(user_management)
+
+    app.register_blueprint(index)
+    app.register_blueprint(user_management, url_prefix="/users")
 
     return app
 

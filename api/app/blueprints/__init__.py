@@ -1,2 +1,2 @@
-from .index import index
-from .user_management import user_management
+from app.blueprints.index import index
+from app.blueprints.user_management import user_management
