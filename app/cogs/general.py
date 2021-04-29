@@ -40,6 +40,7 @@ class General(commands.Cog):
         await ctx.send(emoji.emojize(f'{":sweat_drops:" * number}'))
 
     @commands.command()
+    @commands.is_owner()
     async def api_test(self, ctx):
         async with aiohttp.ClientSession() as session:
             async with session.get(self.cog_config['app_api']) as request:
