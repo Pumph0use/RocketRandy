@@ -7,7 +7,7 @@ import logging
 from dotenv import set_key
 from pathlib import Path
 from discord.ext import commands
-from config import DISCORD_TOKEN, AVATAR_HASH
+from config import DISCORD_TOKEN, AVATAR_HASH, cog_config
 
 # LOGGING
 logger = logging.getLogger("RocketRandy.main")
@@ -26,6 +26,7 @@ for root, dirs, files in os.walk("cogs"):
         cog_name = Path(file_name).stem
         root = root.replace("\\", ".").replace("/", ".")
         logger.info(f"Loading {root}.{cog_name} extension...")
+        disc_bot_client.cog_config = cog_config
         disc_bot_client.load_extension(f"{root}.{cog_name}")
 
 

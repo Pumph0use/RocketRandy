@@ -1,15 +1,18 @@
 import logging
 import random
+import json
 
 import discord
 import emoji
 from discord.ext import commands
+import aiohttp
 
 
 class General(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, cog_config):
         self.bot = bot
         self._last_member = None
+        self.cog_config = cog_config
         self.logger = logging.getLogger("RocketRandy.main")
 
     @commands.Cog.listener("on_message")
@@ -36,6 +39,13 @@ class General(commands.Cog):
         # my bad.
         await ctx.send(emoji.emojize(f'{":sweat_drops:" * number}'))
 
+    @commands.command()
+    async def api_test(self, ctx):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.cog_config['app_api']) as request:
+                if request.status == 200:
+                    await ctx.send(json.dumps(await request.json()))
+
 
 def setup(bot):
-    bot.add_cog(General(bot))
+    bot.add_cog(General(bot, bot.cog_config))

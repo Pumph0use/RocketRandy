@@ -1,16 +1,20 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+if os.getenv('APP_ENV') == 'compose':
+    load_dotenv('.env.compose')
+else:
+    load_dotenv('.env')
 
-# Database
-DB_TYPE = os.getenv("DB_TYPE")
-DB_DRIVER = os.getenv("DB_DRIVER")
-DB_USER = os.getenv("DB_USER")
-DB_PASS = os.getenv("DB_PASS")
-DB_URL = os.getenv("DB_URL")
-DB_NAME = os.getenv("DB_NAME")
-DB_CONNECT_STRING = f"{DB_TYPE}+{DB_DRIVER}://{DB_USER}:{DB_PASS}@{DB_URL}/{DB_NAME}"
+# API
+APP_API_HOST = os.getenv('APP_API_HOST')
+APP_API_PORT = os.getenv('APP_API_PORT')
+APP_API_URL = f'http://{APP_API_HOST}:{APP_API_PORT}'
+
+
+# COG CONFIG
+cog_config = {'app_api': APP_API_URL}
+
 
 # Discord
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
