@@ -1,5 +1,8 @@
-FROM python:3.9-alpine
+FROM python:3.9
 ADD . /api
 WORKDIR /api
+ENV FLASK_APP=app
+ENV FLASK_ENV=development
+RUN pip install -e .
 RUN pip install -r requirements.txt
-CMD ["python", "main.py"]
+CMD ["flask", "run"]

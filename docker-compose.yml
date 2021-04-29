@@ -1,13 +1,15 @@
-version: '3'
+version: '3.8'
 services:
   rr-discord-app:
     build: ./app/
     volumes:
       - ./app/:/usr/src/app/
+    container_name: rr-discord-app
     networks:
       frontend:
   rr-postgres:
     image: postgres:13-alpine
+    container_name: rr-postgres
     ports:
     - "5432:5432"
     volumes:
@@ -20,8 +22,9 @@ services:
       backend:
   rr-api:
     build: ./api/
+    container_name: rr-app
     volumes:
-      - ./api/:/usr/src/api/
+      - ./app/:/usr/src/app/
     ports:
     - "5000:5000"
     networks:
