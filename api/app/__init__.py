@@ -13,9 +13,6 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
 
-    print(index)
-    print(user_management)
-
     app.register_blueprint(index)
     app.register_blueprint(user_management, url_prefix="/users")
 
