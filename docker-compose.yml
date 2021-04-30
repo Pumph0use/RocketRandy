@@ -1,12 +1,12 @@
 version: '3.8'
 services:
   rr-discord-app:
-    build: ./app/
+    build: ./rocketrandy-bot/
     volumes:
-      - ./app/:/usr/src/app/
-    container_name: rr-discord-app
+      - ./rocketrandy-bot/:/usr/src/bot/
+    container_name: rr-discord-bot
     env_file:
-      - ./app/.env.compose
+      - ./rocketrandy-bot/.env.compose
     networks:
       frontend:
   rr-postgres:
@@ -23,14 +23,14 @@ services:
     networks:
       backend:
   rr-api:
-    build: ./api/
+    build: ./rocketrandy-api/
     container_name: rr-api
     volumes:
-      - ./api/:/usr/src/api/
+      - ./rocketrandy-api/:/usr/src/api/
     ports:
     - "5000:5000"
     env_file:
-      - ./api/app/.env.compose
+      - ./rocketrandy-api/app/.env.compose
     networks:
       frontend:
       backend:

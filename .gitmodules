@@ -1,0 +1,6 @@
+[submodule "rocketrandy-bot"]
+	path = rocketrandy-bot
+	url = https://github.com/Pumph0use/rocketrandy-bot.git
+[submodule "rocketrandy-api"]
+	path = rocketrandy-api
+	url = https://github.com/Pumph0use/rocketrandy-api.git
