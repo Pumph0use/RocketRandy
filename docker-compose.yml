@@ -5,6 +5,8 @@ services:
     volumes:
       - ./app/:/usr/src/app/
     container_name: rr-discord-app
+    env_file:
+      - ./app/.env.compose
     networks:
       frontend:
   rr-postgres:
@@ -22,11 +24,13 @@ services:
       backend:
   rr-api:
     build: ./api/
-    container_name: rr-app
+    container_name: rr-api
     volumes:
-      - ./app/:/usr/src/app/
+      - ./api/:/usr/src/api/
     ports:
     - "5000:5000"
+    env_file:
+      - ./api/app/.env.compose
     networks:
       frontend:
       backend:

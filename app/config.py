@@ -1,9 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-if os.getenv('APP_ENV') == 'compose':
-    load_dotenv('.env.compose')
-else:
+if os.getenv('APP_ENV') != 'compose':
     load_dotenv('.env')
 
 # API
